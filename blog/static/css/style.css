@@ -1,0 +1,302 @@
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fafafa;
+    margin: 0;
+    padding: 0;
+    color: #262626;
+}
+
+h1, h2, h3 {
+    color: #333;
+    font-weight: 500;
+}
+
+a {
+    color: #0095f6;
+    text-decoration: none;
+}
+
+/* a:hover {
+    text-decoration: none;
+} */
+
+/* Navbar */
+.navbar {
+    background-color: #fff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #dbdbdb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar a.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #262626;
+}
+
+.navbar .nav-links a {
+    margin-left: 20px;
+    font-size: 16px;
+}
+
+
+
+
+/* Container */
+.container {
+    width: 90%;
+    max-width: 935px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* Form Styles */
+form {
+    max-width: 350px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="email"],
+form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #dbdbdb;
+    border-radius: 3px;
+    background-color: #fafafa;
+    font-size: 14px;
+}
+
+form button[type="submit"] {
+    width: 100%;
+    padding: 8px;
+    background-color: #0095f6;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+form button[type="submit"]:hover {
+    background-color: #007bb5;
+}
+
+/* Login and Signup Pages */
+.auth-container {
+    max-width: 350px;
+    margin: 50px auto;
+}
+
+.auth-container h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+/* Profile Page */
+.profile-container {
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profile-header img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 2px solid #dbdbdb;
+}
+
+.profile-header .profile-info {
+    flex-grow: 1;
+    margin-left: 20px;
+}
+
+.profile-header .profile-info h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.profile-header .profile-info p {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+
+/* Button Styles */
+button {
+    padding: 10px 20px;
+    background-color: #0095f6;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #007bb5;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.p-20 {
+    padding: 20px;
+}
+
+
+.post-detail-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.post-title {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.post-meta {
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.post-content {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.post-image {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.post-actions {
+    text-align: center;
+}
+
+
+/* Post List */
+/* .post-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.post-list img {
+    width: 100%;
+    border-radius: 4px;
+}
+.post-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 20px;
+} */
+
+.post-list {
+    list-style-type: none; 
+
+}
+
+
+
+.post-interactions {
+    display: flex;
+    justify-content: space-between; 
+    gap: 10px; 
+    align-items: center; 
+    margin-top: 15px; 
+}
+
+.btn-like, .btn-dislike {
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    background-color: #f0f0f0; /* Default background color */
+    border: 1px solid #ccc; /* Border color */
+    color: #333; /* Default text color */
+    padding: 8px 15px; 
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover effects */
+}
+
+
+
+/* Icon styling within buttons */
+.btn-like i, .btn-dislike i {
+    margin-right: 5px; /* Space between icon and text */
+}
+
+/* Button hover effects */
+.btn-like:hover {
+    background-color: #1e67ee; /* Blue background on hover */
+    color: white; /* White text on hover */
+}
+
+.btn-dislike:hover {
+    background-color: #f44336; /* Red background on hover */
+    color: white; /* White text on hover */
+}
+
+/* Button active state styling */
+.btn-like.active {
+    background-color: #1e67ee; /* Blue background for active like */
+    color: white; /* White text for active like */
+}
+
+.btn-dislike.active {
+    background-color: #f44336; /* Red background for active dislike */
+    color: white; /* White text for active dislike */
+}
+
+/* Additional styling if needed */
+.post-interaction-form {
+    margin: 0; 
+}
+
+
+
+
+/* -------------comment--------------------- */

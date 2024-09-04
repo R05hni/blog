@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <h1>Blog Posts</h1>
+
+    <ul class="post-list">
+        {% for post in posts %}
+            <li class="post-item">
+
+                <div class="post-detail-container">
+                    <h1 class="post-title">{{ post.title }}</h1>  
+                    <div class="post-meta">
+                        <span>by<a href="{% url 'user_posts' post.author.username %}">{{ post.author.username }}</a></span> |
+                        <span>{{ post.created_at|date:"F j, Y, g:i a" }}</span>
+                    </div>   
+                    <div class="post-content">
+                        <p>{{ post.content|safe }}</p>
+                        {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image" style="max-height: 700px;">
+                        {% endif %}
+                    </div> 
+                    
+                    
+                    <div class="post-interactions">
+                        <button class="btn btn-like {% if user.is_authenticated and user_interactions.post_liked %}active{% endif %}" data-post-id="{{ post.id }}" onclick="likePost({{ post.id }})">
+                            <i class="fas fa-thumbs-up"></i> Like <span id="like-count-{{ post.id }}">{{ post.get_like_count }}</span>
+                        </button>
+                        
+                        <button class="btn btn-dislike {% if user.is_authenticated and user_interactions.post_disliked %}active{% endif %}" data-post-id="{{ post.id }}" onclick="dislikePost({{ post.id }})">
+                            <i class="fas fa-thumbs-down"></i> Dislike <span id="dislike-count-{{ post.id }}">{{ post.get_dislike_count }}</span>
+                        </button>
+                        <button class="btn btn-share" onclick="sharePost('{{ request.build_absolute_uri }}')">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                        {% if post.image %}
+                        <button class="btn btn-download" onclick="downloadPost({{ post.id }})">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        {% endif %}
+                    </div>
+                    
+                   
+                     <br><hr>
+                     <div class="comment-icon" onclick="toggleCommentSection({{ post.id }})">
+                        <i class="fas fa-comments"></i> 
+                        <span id="comment-count-{{ post.id }}">({{ post.comments.count }})</span>
+                    </div>
+                     {% comment %} <div class="comment-section"> {% endcomment %}
+                    <div class="comment-section" id="comment-section-{{ post.id }}" style="display:none">
+
+                        <h3>Comments...</h3>
+                    
+                        {% for comment in post.comments.all %}
+                            <div class="comment" id="comment-{{ comment.id }}">
+                                <strong>{{ comment.user.username }}:</strong>
+                                <p id="comment-content-{{ comment.id }}">{{ comment.content }}</p>
+                                {% if comment.user == request.user %}
+                                    <a href="#" class="btn btn-edit" onclick="startEditComment(event, {{ comment.id }})">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="#" class="btn btn-delete" onclick="deleteComment(event, {{ comment.id }})">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
+                                {% endif %}
+                                <small>Posted on: {{ comment.created_at }}</small>
+                    
+                                <!-- Hidden edit form -->
+                                <div id="edit-form-{{ comment.id }}" style="display: none;">
+                                    <textarea id="edit-comment-content-{{ comment.id }}" style="width: 100%; height: 50px; border: 1px solid #ccc; border-radius: 8px; line-height: 1; resize: vertical;"></textarea>
+                                    <button onclick="saveComment({{ comment.id }})">Save</button>
+                                    <button onclick="cancelEdit({{ comment.id }})">Cancel</button>
+                                </div>
+                            </div> <br><hr>
+                        {% empty %}
+                            <p>No comments yet.</p>
+                        {% endfor %}
+                        {% if user.is_authenticated %}
+                            <div class="comment" id="comntbox">
+                                <textarea id="new-comment-content-{{ post.id }}" placeholder="Write your comment here..." style="width: calc(100% - 22px); height: 50px; border: 1px solid #ccc; border-radius: 8px; line-height: 1; resize: vertical; max-height: 70px;"></textarea>
+                                <button onclick="submitComment({{ post.id }})">Submit</button>
+                            </div>
+                        {% else %}
+                            <p>Please <a href="{% url 'login' %}">log in</a> to add a comment.</p>
+                        {% endif %}
+                    </div>
+                    
+               
+                    {% comment %} end comment section {% endcomment %}
+                </div>
+                
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    function likePost(postId) {
+        fetch(`/like-post/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action: 'like' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`like-count-${postId}`).innerText = data.likes;
+                document.getElementById(`dislike-count-${postId}`).innerText = data.dislikes;
+                updateButtonStyles(postId, 'like');
+            }
+        });
+    }
+
+    function dislikePost(postId) {
+        fetch(`/dislike-post/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action: 'dislike' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`like-count-${postId}`).innerText = data.likes;
+                document.getElementById(`dislike-count-${postId}`).innerText = data.dislikes;
+                updateButtonStyles(postId, 'dislike');
+            }
+        });
+    }
+
+    function updateButtonStyles(postId, actionType) {
+        const likeButton = document.querySelector(`button[data-post-id="${postId}"].btn-like`);
+        const dislikeButton = document.querySelector(`button[data-post-id="${postId}"].btn-dislike`);
+        
+        if (actionType === 'like') {
+            likeButton.classList.add('active');
+            dislikeButton.classList.remove('active');
+        } else if (actionType === 'dislike') {
+            likeButton.classList.remove('active');
+            dislikeButton.classList.add('active');
+        } else {
+            likeButton.classList.remove('active');
+            dislikeButton.classList.remove('active');
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function sharePost(postUrl) {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Check out this post!',
+                url: postUrl
+            }).then(() => {
+                console.log('Thanks for sharing!');
+            }).catch((error) => {
+                console.error('Error sharing:', error);
+            });
+        } else {
+           
+            const tempInput = document.createElement('input');
+            tempInput.value = postUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert('Post link copied to clipboard!');
+        }
+    }
+    function downloadPost(postId) {
+        // Open a new window or tab to download the post content
+        window.location.href = `/download-post/${postId}/`;
+    }
+    
+    //----------comment section
+    function toggleCommentSection(postId) {
+        const commentSection = document.getElementById(`comment-section-${postId}`);
+        if (commentSection.style.display === 'none') {
+            commentSection.style.display = 'block';
+        } else {
+            commentSection.style.display = 'none';
+        }
+    }
+    
+    function submitComment(postId) {
+        const content = document.getElementById(`new-comment-content-${postId}`).value;
+    
+        fetch(`/add-comment/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: content })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload(); 
+            } else {
+                console.error('Failed to submit comment');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function startEditComment(event, commentId) {
+    event.preventDefault();
+    document.getElementById(`comment-content-${commentId}`).style.display = 'none';
+    document.getElementById(`edit-form-${commentId}`).style.display = 'block';
+    
+    // Set the textarea value to the current comment content
+    const currentContent = document.getElementById(`comment-content-${commentId}`).innerText;
+    document.getElementById(`new-comment-content--${post.id}`).value = currentContent;
+   
+}
+
+function saveComment(commentId) {
+    const newContent = document.getElementById(`edit-comment-content-${commentId}`).value;
+
+    fetch(`/edit-comment/${commentId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: newContent })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the comment content and hide the edit form
+            document.getElementById(`comment-content-${commentId}`).innerText = newContent;
+            document.getElementById(`comment-content-${commentId}`).style.display = 'block';
+            document.getElementById(`edit-form-${commentId}`).style.display = 'none';
+        } else {
+            console.error('Failed to update comment:', data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function cancelEdit(commentId) {
+    // Hide the edit form and show the original comment content
+    document.getElementById(`comment-content-${commentId}`).style.display = 'block';
+    document.getElementById(`edit-form-${commentId}`).style.display = 'none';
+}
+
+
+
+    function deleteComment(event, commentId) {
+        event.preventDefault();  
+        if (confirm("Are you sure you want to delete this comment?")) {
+            fetch(`/delete-comment/${commentId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the comment from the DOM
+                    document.getElementById(`comment-${commentId}`).remove();
+                } else {
+                    console.error('Failed to delete comment:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    }
+    
+    
+</script>
+{% endblock %}
+

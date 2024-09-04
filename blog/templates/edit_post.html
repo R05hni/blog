@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block content %}
+<div class="edit-post-container">
+    <h2>Edit Post</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    </form>
+</div>
+<script>
+    tinymce.init({
+        selector: '#id_content',
+        plugins: 'advlist autolink lists link image charmap preview anchor',
+        toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat',
+        height: 300,
+    });
+</script>
+{% endblock %}

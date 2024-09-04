@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}My Blog{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <script src="{% static 'tinymce/tinymce.min.js' %}"></script>
+</head>
+<body>
+    <!-- Header -->
+    <div class="navbar">
+        <a href="{% url 'home' %}" class="logo">MyBlog</a>
+        <div class="nav-links">
+
+            <a href="{% url 'home' %}">Home</a> |
+            {% if user.is_authenticated %}
+                <a href="{% url 'create_post' %}" class="btn btn-primary">Create New Post</a> |
+                <a href="{% url 'profile' %}">Profile</a> |
+                <a href="{% url 'change_password' %}">Change Password</a>
+                <a href="{% url 'logout' %}">Logout</a> 
+            {% else %}
+                <a href="{% url 'login' %}">Login</a> |
+                <a href="{% url 'signup' %}">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+
+    </footer>
+</body>
+</html>

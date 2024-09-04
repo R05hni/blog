@@ -1,0 +1,31 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2>Login</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Login</button>
+        <div id = "msg"></div>
+    </form>
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        var message = "{{ message }}";
+        
+        
+        if (message) {
+            var msgDiv = document.getElementById('msg');
+            msgDiv.textContent = message;  
+            msgDiv.style.color = 'red';     s
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Create Post{% endblock %}
+{% block content %}
+<div class="create-post-container">
+    <h2>Create a New Post</h2>
+    <form method="post" class="create-post-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Create Post</button>
+    </form>
+</div>
+
+<script>
+    tinymce.init({
+        selector: '#id_content',
+        plugins: 'advlist autolink lists link image charmap preview anchor',
+        toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat',
+        forced_root_block: " ", 
+        height: 300,
+    });
+</script>
+
+
+{% endblock %}
+
+
+
+
+
+
+

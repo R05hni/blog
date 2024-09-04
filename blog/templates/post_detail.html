@@ -1,0 +1,60 @@
+<!-- templates/post_detail.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="post-detail-container">
+    <h1 class="post-title">{{ post.title }}</h1>
+   
+    <a href="{% url 'edit_post' post.pk %}" class="btn btn-edit">
+        <i class="fas fa-pencil-alt"></i> Edit
+    </a> &nbsp;&nbsp;&nbsp;
+    <a href="{% url 'delete_post' post.pk %}" class="btn btn-delete" onclick="return deletePost(event, {{ post.pk }})">
+        <i class="fas fa-trash-alt"></i> Delete
+    </a>
+   
+    <div class="post-meta">
+        <p>By {{ post.author.username }} on {{ post.created_at|date:"F j, Y, g:i a" }}</p>
+    </div>
+    
+    <div class="post-content">
+        <p>{{ post.content }}</p>
+        {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
+        {% endif %}
+    </div>
+    
+    <div class="post-actions">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    </div>
+    
+</div>
+<script>
+    function deletePost(event, postId) {
+        event.preventDefault(); 
+        
+        if (confirm('Are you sure you want to delete this post?')) {
+            fetch(`/delete-post/${postId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);  
+                        window.location.reload();  
+                    } else {
+                        alert('Error deleting post.');  
+                    }
+                })
+                .catch(() => {
+                    alert('An unexpected error occurred.');
+                });
+        }
+    }
+
+    </script>
+{% endblock %}
+
+
+
+
